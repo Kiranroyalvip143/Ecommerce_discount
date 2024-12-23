@@ -1,0 +1,226 @@
+/* Modal Background */
+.product-picker-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+/* Product Picker Modal */
+.product-picker {
+  background: white;
+  border-radius: 8px;
+  max-width: 900px;
+  padding: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  position: relative;
+  width: 700px;
+  max-height: 80vh;
+  display: flext;
+}
+
+/* Header Section */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.product-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 647px;
+  color: #333;
+  left: 427px;
+  margin-left: -6px;
+  margin-top: -14px;
+  border-bottom: 1px solid;
+}
+
+.close-button {
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* Search Bar */
+.search-bar {
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 16px;
+  outline: none;
+  box-sizing: border-box;
+  width: 600px;
+  height: 32px;
+  top: 308px;
+  left: 417px;
+  gap: 0px;
+}
+
+.product-list {
+  flex: 1; /* Allow the product list to take up remaining space */
+  max-height: 325px;
+  overflow-y: auto;
+  margin-top: 10px;
+  padding-right: 10px;
+  box-sizing: border-box;
+  border-block: 1px solid;
+}
+
+.product-item {
+  height: 48px;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.3s ease;
+}
+
+.product-item:hover {
+  background-color: #f9f9f9;
+}
+
+.product-item img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.product-item .product-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 10px;
+  color: #333;
+}
+
+.product-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.variant-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 0;
+  padding-left: 32px;
+  flex-direction: row;
+}
+
+.product-image {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.product-details,
+.variant-details {
+  display: flex;
+  /* flex-direction: column; */
+}
+
+.product-title {
+  font-weight: bold;
+}
+
+.product-price,
+.variant-price {
+  margin-left: auto;
+}
+
+.variant-availability {
+  font-size: 16px;
+  margin-left: 225px;
+}
+
+/* Footer Section */
+.footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0px;
+  align-items: center;
+  padding-top: 2px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.footer span {
+  font-size: 14px;
+  color: #555;
+}
+
+.cancel-button,
+.add-button {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.cancel-button {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.cancel-button:hover {
+  background-color: #e0e0e0;
+}
+
+.add-button {
+  background-color: #007bff;
+  color: white;
+}
+
+.add-button:hover {
+  background-color: #0056b3;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .product-picker {
+    width: 95%;
+    padding: 15px;
+  }
+
+  .search-bar {
+    font-size: 14px;
+  }
+
+  .product-item img {
+    width: 70px;
+    height: 70px;
+  }
+
+  .footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .footer span {
+    margin-bottom: 10px;
+  }
+
+  .cancel-button,
+  .add-button {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}

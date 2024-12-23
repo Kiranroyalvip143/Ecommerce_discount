@@ -1,0 +1,28 @@
+.header {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  padding: 8px 21px;
+  height: 50px;
+  position: relative;
+  width: 1440px;
+  border-bottom: 1px solid #000;
+  box-sizing: border-box;
+}
+
+.header-image {
+  width: 30.97px;
+  height: 30.97px;
+  top: 8px;
+  left: 21px;
+}
+
+.header-text {
+  font-weight: bold;
+  color: #000;
+  width: 198px;
+  height: 24px;
+  top: 11px;
+  left: 69px;
+  position: absolute;
+}
