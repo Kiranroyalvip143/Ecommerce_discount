@@ -1,8 +1,8 @@
 [build]
-  publish = "public"
-  command = "npm run build"
+  publish = "build"
+  command = "CI= npm run build"
 
 [[redirects]]
   from = "/*"
-  to = "/index.js"
+  to = "/index.html"
   status = 200
