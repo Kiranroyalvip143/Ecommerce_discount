@@ -130,7 +130,6 @@ const ProductRow = ({
               )}
             </div>
 
-            {/* Variant Remove Button */}
             {onRemoveVariant && (
               <button
                 className="remove-button"
