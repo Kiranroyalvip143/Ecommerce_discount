@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import "./ProductPicker.css";
 
 const ProductPicker = ({ isOpen, onClose, onAdd }) => {
@@ -7,6 +7,7 @@ const ProductPicker = ({ isOpen, onClose, onAdd }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const observer = useRef();
 
   const fetchProducts = async (search = "", currentPage = 1) => {
     try {
@@ -38,17 +39,11 @@ const ProductPicker = ({ isOpen, onClose, onAdd }) => {
     setHasMore(true);
   };
 
-  const handleItemSelect = (
-    id,
-    isVariant = false,
-    productId = null,
-    title = ""
-  ) => {
+  const handleItemSelect = (id, isVariant = false, productId = null) => {
     setSelectedItems((prev) => {
       let updatedSelection = [...prev];
 
       if (isVariant) {
-        // Handle variant selection
         const product = products.find((product) => product.id === productId);
         const existingProductIndex = updatedSelection.findIndex(
           (item) => item.id === productId
@@ -61,14 +56,34 @@ const ProductPicker = ({ isOpen, onClose, onAdd }) => {
             variants: product.variants.filter((variant) => variant.id === id),
           });
         } else {
-          // If the parent product exists, replace its variants with the selected one
-          updatedSelection[existingProductIndex] = {
-            ...product,
-            variants: product.variants.filter((variant) => variant.id === id),
-          };
+          // If the parent product exists, update its variants
+          const existingProduct = updatedSelection[existingProductIndex];
+          const variantSelected = existingProduct.variants.some(
+            (variant) => variant.id === id
+          );
+
+          if (variantSelected) {
+            // Deselect the variant
+            existingProduct.variants = existingProduct.variants.filter(
+              (variant) => variant.id !== id
+            );
+            if (existingProduct.variants.length === 0) {
+              // If no variants are left, remove the product
+              updatedSelection = updatedSelection.filter(
+                (item) => item.id !== productId
+              );
+            } else {
+              updatedSelection[existingProductIndex] = existingProduct;
+            }
+          } else {
+            // Select the variant
+            existingProduct.variants.push(
+              product.variants.find((variant) => variant.id === id)
+            );
+            updatedSelection[existingProductIndex] = existingProduct;
+          }
         }
       } else {
-        // Handle product selection
         const product = products.find((product) => product.id === id);
         const productSelected = updatedSelection.some((item) => item.id === id);
 
@@ -90,6 +105,19 @@ const ProductPicker = ({ isOpen, onClose, onAdd }) => {
     onClose();
   };
 
+  const lastProductElementRef = useCallback(
+    (node) => {
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          setPage((prevPage) => prevPage + 1);
+        }
+      });
+      if (node) observer.current.observe(node);
+    },
+    [hasMore]
+  );
+
   return (
     isOpen && (
       <div className="product-picker-modal">
@@ -107,17 +135,14 @@ const ProductPicker = ({ isOpen, onClose, onAdd }) => {
             onChange={handleSearch}
             className="search-bar"
           />
-          <div
-            className="product-list"
-            onScroll={(e) => {
-              const { scrollTop, scrollHeight, clientHeight } = e.target;
-              if (scrollHeight - scrollTop === clientHeight && hasMore) {
-                setPage((prev) => prev + 1);
-              }
-            }}
-          >
-            {products.map((product) => (
-              <div key={product.id}>
+          <div className="product-list">
+            {products.map((product, index) => (
+              <div
+                key={product.id}
+                ref={
+                  products.length === index + 1 ? lastProductElementRef : null
+                }
+              >
                 <div className="product-row">
                   <input
                     type="checkbox"
@@ -144,7 +169,9 @@ const ProductPicker = ({ isOpen, onClose, onAdd }) => {
                         handleItemSelect(variant.id, true, product.id)
                       }
                       checked={selectedItems.some(
-                        (item) => item.id === variant.id && item.isVariant
+                        (item) =>
+                          item.id === product.id &&
+                          item.variants.some((v) => v.id === variant.id)
                       )}
                     />
                     <div className="product-details">

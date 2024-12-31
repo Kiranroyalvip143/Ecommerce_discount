@@ -6,19 +6,17 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 const ProductList = () => {
   const [products, setProducts] = useState([
-    { id: 1, name: "Select Product", variants: [] },
+    { id: 1, name: "Select Product", variants: [], expanded: false },
   ]);
   const [isPickerOpen, setPickerOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
-  const [expandedProducts, setExpandedProducts] = useState({});
-  console.log(products);
+
   const handleEditProduct = (index) => {
     setEditingIndex(index);
     setPickerOpen(true);
   };
 
   const handleAddProducts = (selectedProducts) => {
-    console.log(`selected product`, selectedProducts);
     const updatedProducts = [...products];
     updatedProducts.splice(
       editingIndex,
@@ -28,6 +26,7 @@ const ProductList = () => {
         name: `${p.title}`,
         variants: p.variants || [],
         discount: null,
+        expanded: false,
       }))
     );
     setProducts(updatedProducts);
@@ -48,20 +47,18 @@ const ProductList = () => {
   };
 
   const handleRemoveVariant = (productIndex, variantIndex) => {
-    // Ensure that you're correctly accessing the variants of the product
     const updatedProducts = [...products];
-    const product = updatedProducts[productIndex]; // Get the specific product
+    const product = updatedProducts[productIndex];
     const updatedVariants = product.variants.filter(
       (_, i) => i !== variantIndex
-    ); // Remove the variant by index
+    );
 
-    // Update the product's variants
     updatedProducts[productIndex] = {
       ...product,
-      variants: updatedVariants, // Set the updated variants
+      variants: updatedVariants,
     };
 
-    setProducts(updatedProducts); // Update the products state
+    setProducts(updatedProducts);
   };
 
   const onDragEnd = (result) => {
@@ -86,15 +83,15 @@ const ProductList = () => {
         variants: [],
         serialNo: products.length + 1,
         discount: null,
+        expanded: false,
       },
     ]);
   };
 
-  const toggleExpandProduct = (id) => {
-    setExpandedProducts((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
+  const toggleExpandProduct = (index) => {
+    const updatedProducts = [...products];
+    updatedProducts[index].expanded = !updatedProducts[index].expanded;
+    setProducts(updatedProducts);
   };
 
   return (
@@ -124,7 +121,6 @@ const ProductList = () => {
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
                     >
-                      {/* Product Row */}
                       <ProductRow
                         product={product}
                         index={index}
@@ -133,11 +129,11 @@ const ProductList = () => {
                           handleAddDiscount(index, discountType, discountValue)
                         }
                         onRemove={() => handleRemoveProduct(index)}
-                        onRemoveVariant={(index, variantIndex) =>
+                        onRemoveVariant={(variantIndex) =>
                           handleRemoveVariant(index, variantIndex)
-                        } // Passing variantIndex
-                        onToggleExpand={() => toggleExpandProduct(product.id)}
-                        isExpanded={expandedProducts[product.id]}
+                        }
+                        onToggleExpand={() => toggleExpandProduct(index)}
+                        isExpanded={product.expanded}
                       />
                     </div>
                   )}

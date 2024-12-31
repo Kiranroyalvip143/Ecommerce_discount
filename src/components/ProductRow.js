@@ -91,7 +91,6 @@ const ProductRow = ({
           </button>
         )}
       </div>
-      {/* Variants Display */}
       {isExpanded &&
         product.variants.map((variant, variantIndex) => (
           <div key={variant.id} className="variant-row">
