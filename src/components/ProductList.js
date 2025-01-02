@@ -49,6 +49,8 @@ const ProductList = () => {
   const handleRemoveVariant = (productIndex, variantIndex) => {
     const updatedProducts = [...products];
     const product = updatedProducts[productIndex];
+
+    // Remove the variant from the product
     const updatedVariants = product.variants.filter(
       (_, i) => i !== variantIndex
     );
@@ -57,6 +59,8 @@ const ProductList = () => {
       ...product,
       variants: updatedVariants,
     };
+
+    console.log("Updated products before setting state:", updatedProducts);
 
     setProducts(updatedProducts);
   };
@@ -67,7 +71,6 @@ const ProductList = () => {
     if (!destination) return;
 
     if (type === "product") {
-      // Handle product reordering
       const reorderedProducts = Array.from(products);
       const [movedProduct] = reorderedProducts.splice(source.index, 1);
       reorderedProducts.splice(destination.index, 0, movedProduct);
@@ -79,7 +82,6 @@ const ProductList = () => {
         }))
       );
     } else if (type === "variant") {
-      // Extract productIndex from droppableId
       const productIndex = parseInt(destination.droppableId.split("-")[2], 10);
       handleDragEndVariants(productIndex, source.index, destination.index);
     }
@@ -112,24 +114,17 @@ const ProductList = () => {
   ) => {
     if (destinationIndex == null) return;
 
-    // Create a copy of the products state
     const updatedProducts = [...products];
-
-    // Get the product whose variants are being reordered
     const product = updatedProducts[productIndex];
-
-    // Reorder the variants immutably
     const updatedVariants = Array.from(product.variants);
     const [movedVariant] = updatedVariants.splice(sourceIndex, 1);
     updatedVariants.splice(destinationIndex, 0, movedVariant);
 
-    // Update the product with reordered variants
     updatedProducts[productIndex] = {
       ...product,
       variants: updatedVariants,
     };
 
-    // Update state
     setProducts(updatedProducts);
   };
 
@@ -168,7 +163,7 @@ const ProductList = () => {
                           handleAddDiscount(index, discountType, discountValue)
                         }
                         onRemove={() => handleRemoveProduct(index)}
-                        onRemoveVariant={(variantIndex) =>
+                        onRemoveVariant={(index, variantIndex) =>
                           handleRemoveVariant(index, variantIndex)
                         }
                         onToggleExpand={() => toggleExpandProduct(index)}

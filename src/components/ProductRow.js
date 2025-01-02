@@ -13,7 +13,6 @@ const ProductRow = ({
   onRemoveVariant,
   onToggleExpand,
   isExpanded,
-  onDragEndVariants,
 }) => {
   const [isAddingDiscount, setIsAddingDiscount] = useState(false);
   const [discountType, setDiscountType] = useState("flat");
@@ -132,6 +131,7 @@ const ProductRow = ({
                         </div>
                       </div>
 
+                      {/* Remove Variant */}
                       {onRemoveVariant && (
                         <button
                           className="remove-button"
