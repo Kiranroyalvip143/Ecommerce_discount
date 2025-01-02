@@ -62,16 +62,27 @@ const ProductList = () => {
   };
 
   const onDragEnd = (result) => {
-    if (!result.destination) return;
-    const reorderedProducts = Array.from(products);
-    const [movedProduct] = reorderedProducts.splice(result.source.index, 1);
-    reorderedProducts.splice(result.destination.index, 0, movedProduct);
-    setProducts(
-      reorderedProducts.map((product, index) => ({
-        ...product,
-        serialNo: index + 1,
-      }))
-    );
+    const { source, destination, type } = result;
+
+    if (!destination) return;
+
+    if (type === "product") {
+      // Handle product reordering
+      const reorderedProducts = Array.from(products);
+      const [movedProduct] = reorderedProducts.splice(source.index, 1);
+      reorderedProducts.splice(destination.index, 0, movedProduct);
+
+      setProducts(
+        reorderedProducts.map((product, index) => ({
+          ...product,
+          serialNo: index + 1,
+        }))
+      );
+    } else if (type === "variant") {
+      // Extract productIndex from droppableId
+      const productIndex = parseInt(destination.droppableId.split("-")[2], 10);
+      handleDragEndVariants(productIndex, source.index, destination.index);
+    }
   };
 
   const handleAddNewProduct = () => {
@@ -94,6 +105,34 @@ const ProductList = () => {
     setProducts(updatedProducts);
   };
 
+  const handleDragEndVariants = (
+    productIndex,
+    sourceIndex,
+    destinationIndex
+  ) => {
+    if (destinationIndex == null) return;
+
+    // Create a copy of the products state
+    const updatedProducts = [...products];
+
+    // Get the product whose variants are being reordered
+    const product = updatedProducts[productIndex];
+
+    // Reorder the variants immutably
+    const updatedVariants = Array.from(product.variants);
+    const [movedVariant] = updatedVariants.splice(sourceIndex, 1);
+    updatedVariants.splice(destinationIndex, 0, movedVariant);
+
+    // Update the product with reordered variants
+    updatedProducts[productIndex] = {
+      ...product,
+      variants: updatedVariants,
+    };
+
+    // Update state
+    setProducts(updatedProducts);
+  };
+
   return (
     <div className="product-list-container">
       <h1 className="product-list-title">Add Products</h1>
@@ -102,7 +141,7 @@ const ProductList = () => {
         <h3>Discount</h3>
       </div>
       <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId="droppable-products">
+        <Droppable droppableId="droppable-products" type="product">
           {(provided) => (
             <div
               className="products-container"
@@ -134,6 +173,13 @@ const ProductList = () => {
                         }
                         onToggleExpand={() => toggleExpandProduct(index)}
                         isExpanded={product.expanded}
+                        onDragEndVariants={(sourceIndex, destinationIndex) =>
+                          handleDragEndVariants(
+                            index,
+                            sourceIndex,
+                            destinationIndex
+                          )
+                        }
                       />
                     </div>
                   )}

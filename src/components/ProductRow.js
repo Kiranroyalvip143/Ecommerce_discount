@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
+import { Droppable, Draggable } from "react-beautiful-dnd";
 import "./ProductRow.css";
 
 const ProductRow = ({
@@ -12,6 +13,7 @@ const ProductRow = ({
   onRemoveVariant,
   onToggleExpand,
   isExpanded,
+  onDragEndVariants,
 }) => {
   const [isAddingDiscount, setIsAddingDiscount] = useState(false);
   const [discountType, setDiscountType] = useState("flat");
@@ -91,56 +93,62 @@ const ProductRow = ({
           </button>
         )}
       </div>
-      {isExpanded &&
-        product.variants.map((variant, variantIndex) => (
-          <div key={variant.id} className="variant-row">
-            <div className="product-row">
-              <div className="product-details">
-                <DragIndicatorIcon className="drag-icon" />
-                <div className="product-info">
-                  <span className="product-name">
-                    {variant.title}
-                    <button
-                      className="edit-button"
-                      onClick={() => onEdit(variant.id)}
-                    ></button>
-                  </span>
-                </div>
-              </div>
-              <div className="variant-info">
-                <span className="variant-price">${variant.price}</span>
-              </div>
-              {isAddingDiscount && (
-                <div className="discount-section">
-                  <select
-                    value={discountType}
-                    onChange={(e) => setDiscountType(e.target.value)}
-                  >
-                    <option value="flat">Flat</option>
-                    <option value="percentage">Percentage</option>
-                  </select>
-                  <input
-                    type="number"
-                    value={discountValue}
-                    onChange={(e) => setDiscountValue(e.target.value)}
-                    placeholder="Discount"
-                  />
-                </div>
-              )}
-            </div>
 
-            {onRemoveVariant && (
-              <button
-                className="remove-button"
-                onClick={() => {
-                  onRemoveVariant(index, variantIndex);
-                }}
-              >
-                x
-              </button>
-            )}
-          </div>
-        ))}
+      {/* Variants Drag-and-Drop */}
+      {isExpanded && (
+        <Droppable droppableId={`droppable-variants-${index}`} type="variant">
+          {(provided) => (
+            <div
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+              className="variants-container"
+            >
+              {product.variants.map((variant, variantIndex) => (
+                <Draggable
+                  key={variant.id}
+                  draggableId={`variant-${variant.id}`}
+                  index={variantIndex}
+                >
+                  {(provided) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                      className="variant-row"
+                    >
+                      <div className="product-row">
+                        <div className="product-details">
+                          <DragIndicatorIcon className="drag-icon" />
+                          <div className="product-info">
+                            <span className="product-name">
+                              {variant.title}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="variant-info">
+                          <span className="variant-price">
+                            ${variant.price}
+                          </span>
+                        </div>
+                      </div>
+
+                      {onRemoveVariant && (
+                        <button
+                          className="remove-button"
+                          onClick={() => onRemoveVariant(index, variantIndex)}
+                        >
+                          x
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      )}
     </div>
   );
 };
