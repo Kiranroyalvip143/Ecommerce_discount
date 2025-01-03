@@ -18,18 +18,33 @@ const ProductList = () => {
 
   const handleAddProducts = (selectedProducts) => {
     const updatedProducts = [...products];
-    updatedProducts.splice(
-      editingIndex,
-      1,
-      ...selectedProducts.map((p) => ({
-        id: p.productId,
-        name: `${p.title}`,
-        variants: p.variants || [],
-        discount: null,
-        expanded: false,
-      }))
-    );
+
+    // Filter out duplicates from selectedProducts
+    const filteredProducts = selectedProducts.filter((p) => {
+      return !updatedProducts.some(
+        (existingProduct) => existingProduct.id === p.id
+      );
+    });
+
+    console.log("Filtered products:", filteredProducts);
+
+    // Map filtered products to the desired format
+    const newProducts = filteredProducts.map((p) => ({
+      id: p.id,
+      name: `${p.title}`,
+      variants: p.variants || [],
+      discount: null,
+      expanded: false,
+    }));
+
+    if (editingIndex !== null) {
+      updatedProducts.splice(editingIndex, 1, ...newProducts);
+    } else {
+      updatedProducts.push(...newProducts);
+    }
     setProducts(updatedProducts);
+    setEditingIndex(null);
+    setPickerOpen(false);
   };
 
   const handleAddDiscount = (index, discountType, discountValue) => {
